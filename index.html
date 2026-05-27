@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark" data-lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>DriveTools — Limpe, organize e proteja seu Google Drive</title>
+  <meta name="description" content="Quatro ferramentas em uma para auditar e organizar seu Google Drive. Open source, gratuito, roda na sua conta Google.">
+
+  <meta property="og:title" content="DriveTools — Limpe, organize e proteja seu Google Drive">
+  <meta property="og:description" content="Encontre duplicatas, organize arquivos e audite permissões. Open source, sem cadastro.">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,75..125,300..900&family=Roboto:wght@400;500;700;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..600,0..1,-25..0&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   DRIVETOOLS LANDING - design system aligned
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gg-blue:   #4285F4;
+  --gg-blue-d: #1A73E8;
+  --gg-red:    #EA4335;
+  --gg-yellow: #FBBC04;
+  --gg-green:  #34A853;
+  --gg-purple: #A142F4;
+
+  --gradient: linear-gradient(135deg, #4796E3 0%, #8B5CF6 35%, #E94B7D 70%, #FBBC04 100%);
+  --gradient-text: linear-gradient(95deg, #4285F4 0%, #1A73E8 22%, #34A853 50%, #FBBC04 78%, #EA4335 100%);
+
+  --font-display: 'Roboto Flex', 'Roboto', system-ui, sans-serif;
+  --font-ui: 'Roboto', system-ui, -apple-system, sans-serif;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.12);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.16);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.4);
+
+  --content-max: 1180px;
+  --nav-h: 64px;
+}
+
+[data-theme="dark"] {
+  --bg: #0B0B0E;
+  --bg-elev: #131316;
+  --surface: #1F1F23;
+  --surface-elev: #28282E;
+  --surface-hover: #2E2E35;
+  --border: rgba(255,255,255,.08);
+  --border-strong: rgba(255,255,255,.16);
+  --text: #E8EAED;
+  --text-dim: #9AA0A6;
+  --text-muted: #6B7280;
+  --on-gradient: #FFFFFF;
+}
+
+[data-theme="light"] {
+  --bg: #FFFFFF;
+  --bg-elev: #F8F9FA;
+  --surface: #F8F9FA;
+  --surface-elev: #FFFFFF;
+  --surface-hover: #F1F3F4;
+  --border: rgba(60,64,67,.12);
+  --border-strong: rgba(60,64,67,.24);
+  --text: #202124;
+  --text-dim: #5F6368;
+  --text-muted: #80868B;
+  --on-gradient: #FFFFFF;
+}
+
+html { scroll-behavior: smooth; }
+html, body {
+  height: 100%;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139,92,246,.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 100% 30%, rgba(66,133,244,.10), transparent 60%),
+    var(--bg);
+}
+
+button, input { font-family: inherit; font-size: 14px; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
+a { color: inherit; text-decoration: none; }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Material Symbols ------------------------------------------ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  display: inline-block;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-h);
+  background: rgba(11,11,14,.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+[data-theme="light"] .nav { background: rgba(255,255,255,.85); }
+.nav__inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.brand__mark { width: 28px; height: 28px; flex-shrink: 0; }
+.brand__mark svg { width: 100%; height: 100%; display: block; }
+.brand__name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  transition: background-position .6s ease;
+}
+.brand:hover .brand__name { background-position: 100% 50%; }
+
+.nav__spacer { flex: 1; }
+
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  color: var(--text-dim);
+  transition: background .15s, color .15s;
+}
+.icon-btn:hover { background: var(--surface); color: var(--text); }
+.icon-btn .material-symbols-outlined { font-size: 20px; }
+
+.dropdown { position: relative; }
+.dropdown__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 170px;
+  padding: 6px;
+  background: var(--surface-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  z-index: 60;
+}
+.dropdown.open .dropdown__menu { display: block; }
+.dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  width: 100%;
+  text-align: left;
+  color: var(--text);
+}
+.dropdown__item .material-symbols-outlined { font-size: 18px; color: var(--text-dim); }
+.dropdown__item:hover { background: var(--surface-hover); }
+.dropdown__item.active { background: rgba(66,133,244,.12); color: var(--gg-blue); }
+.dropdown__item.active .material-symbols-outlined { color: var(--gg-blue); }
+.dropdown__item .check { margin-left: auto; opacity: 0; color: var(--gg-blue); font-size: 18px; }
+.dropdown__item.active .check { opacity: 1; }
+.lang-code {
+  display: inline-grid; place-items: center;
+  width: 24px; height: 18px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.dropdown__item.active .lang-code { background: var(--gg-blue); color: #fff; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: .005em;
+  transition: background .15s, box-shadow .15s, transform .1s;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.btn .material-symbols-outlined { font-size: 18px; }
+.btn:active { transform: scale(.98); }
+
+.btn--primary {
+  background: var(--gradient);
+  color: var(--on-gradient);
+  box-shadow: 0 1px 3px rgba(66,133,244,.3);
+}
+.btn--primary:hover { box-shadow: 0 6px 20px rgba(139,92,246,.45); }
+
+.btn--filled {
+  background: var(--gg-blue);
+  color: #fff;
+}
+.btn--filled:hover { background: var(--gg-blue-d); box-shadow: var(--shadow-md); }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn--ghost:hover { background: var(--surface); }
+
+.btn--lg { padding: 13px 28px; font-size: 15px; }
+.btn--lg .material-symbols-outlined { font-size: 20px; }
+
+/* ============================================================
+   LAYOUT GENERAL
+   ============================================================ */
+.section {
+  padding: 80px 24px;
+}
+.section__inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+.section__head { text-align: center; max-width: 720px; margin: 0 auto 48px; }
+.section__eyebrow {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(66,133,244,.12);
+  color: var(--gg-blue);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+[data-theme="dark"] .section__eyebrow { color: #8AB4F8; }
+.section__title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105, 'opsz' 144;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+.section__subtitle { color: var(--text-dim); font-size: 16px; line-height: 1.55; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  padding: 80px 24px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero__inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+.hero__logo { width: 128px; height: 128px; margin: 0 auto 36px; }
+.hero__logo svg { width: 100%; height: 100%; display: block; }
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105, 'opsz' 144;
+  letter-spacing: -.025em;
+  line-height: 1.05;
+  margin-bottom: 22px;
+}
+.hero__title .accent {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  animation: gradientShift 8s linear infinite;
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero__subtitle {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--text-dim);
+  max-width: 640px;
+  margin: 0 auto 36px;
+  line-height: 1.55;
+}
+.hero__cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+.hero__trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 28px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.hero__trust span { display: inline-flex; align-items: center; gap: 6px; }
+.hero__trust .material-symbols-outlined { font-size: 16px; color: var(--gg-green); }
+
+/* ============================================================
+   STATS (problem section)
+   ============================================================ */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+.stat-card {
+  padding: 28px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+.stat-card__icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  margin-bottom: 16px;
+  background: rgba(234,67,53,.12);
+  color: var(--gg-red);
+}
+.stat-card__icon.--y { background: rgba(251,188,4,.14); color: #B68900; }
+[data-theme="dark"] .stat-card__icon.--y { color: var(--gg-yellow); }
+.stat-card__icon.--b { background: rgba(66,133,244,.12); color: var(--gg-blue); }
+[data-theme="dark"] .stat-card__icon.--b { color: #8AB4F8; }
+.stat-card__icon .material-symbols-outlined { font-size: 22px; }
+.stat-card__value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.stat-card__label { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+
+/* ============================================================
+   FEATURES
+   ============================================================ */
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.feature {
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color .2s, transform .2s;
+}
+.feature:hover { border-color: var(--border-strong); }
+.feature__icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  margin-bottom: 20px;
+  background: rgba(66,133,244,.12);
+  color: var(--gg-blue);
+}
+[data-theme="dark"] .feature__icon { color: #8AB4F8; }
+.feature__icon.--green { background: rgba(52,168,83,.12); color: var(--gg-green); }
+.feature__icon.--yellow { background: rgba(251,188,4,.14); color: #B68900; }
+[data-theme="dark"] .feature__icon.--yellow { color: var(--gg-yellow); }
+.feature__icon.--red { background: rgba(234,67,53,.12); color: var(--gg-red); }
+.feature__icon .material-symbols-outlined { font-size: 24px; }
+.feature__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105;
+  letter-spacing: -.01em;
+  margin-bottom: 8px;
+}
+.feature__text { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+/* ============================================================
+   ROI CALCULATOR
+   ============================================================ */
+.roi {
+  background: var(--bg-elev);
+}
+.roi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.roi-controls { display: flex; flex-direction: column; gap: 24px; }
+.roi-control__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.roi-control__label-text { font-size: 14px; font-weight: 500; color: var(--text-dim); }
+.roi-control__value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 100;
+  letter-spacing: -.01em;
+  color: var(--text);
+}
+
+input[type="range"].slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 999px;
+  background: var(--gradient);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  border: 3px solid var(--bg);
+}
+input[type="range"].slider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4796E3, #8B5CF6);
+  cursor: pointer;
+  border: 3px solid var(--bg);
+}
+
+.roi-result {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px;
+}
+.roi-result__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.roi-result__row:last-child { border-bottom: none; padding-bottom: 0; }
+.roi-result__row:first-child { padding-top: 0; }
+.roi-result__label { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+.roi-result__value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 100;
+  letter-spacing: -.015em;
+  font-variant-numeric: tabular-nums;
+}
+.roi-result__value.--big {
+  font-size: 32px;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.roi-note { font-size: 11px; color: var(--text-muted); margin-top: 14px; line-height: 1.5; }
+
+/* ============================================================
+   HOW IT WORKS (steps)
+   ============================================================ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  counter-reset: step;
+}
+.step {
+  position: relative;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  counter-increment: step;
+}
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 100;
+  letter-spacing: -.03em;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  display: block;
+  margin-bottom: 14px;
+}
+.step__title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105;
+  letter-spacing: -.01em;
+  margin-bottom: 8px;
+}
+.step__text { font-size: 14px; color: var(--text-dim); line-height: 1.55; }
+
+/* ============================================================
+   PRIVACY / TRUST
+   ============================================================ */
+.privacy {
+  background: var(--bg-elev);
+}
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 32px;
+}
+.privacy-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.privacy-item__icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(52,168,83,.14);
+  color: var(--gg-green);
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.privacy-item__icon .material-symbols-outlined { font-size: 20px; }
+.privacy-item__title { font-weight: 500; margin-bottom: 4px; }
+.privacy-item__text { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+/* ============================================================
+   CTA FINAL
+   ============================================================ */
+.cta-final {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(66,133,244,.08) 0%, rgba(139,92,246,.08) 50%, rgba(234,67,53,.06) 100%);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.cta-final__title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+.cta-final__text { color: var(--text-dim); font-size: 16px; margin-bottom: 28px; max-width: 540px; margin-left: auto; margin-right: auto; }
+
+/* ============================================================
+   CREATOR CARD
+   ============================================================ */
+.creator-card {
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 28px;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 900px;
+}
+.creator-photo {
+  width: 132px; height: 132px;
+  border-radius: 999px;
+  background: var(--surface-elev) center/cover no-repeat;
+  border: 1px solid var(--border-strong);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.creator-photo .material-symbols-outlined { font-size: 56px; }
+.creator-info h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 105;
+  letter-spacing: -.01em;
+  margin-bottom: 4px;
+}
+.creator-info .creator-role { color: var(--text-dim); font-size: 14px; margin-bottom: 14px; }
+.creator-info .creator-bio { font-size: 14px; line-height: 1.6; color: var(--text-dim); margin-bottom: 16px; }
+.creator-info .creator-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.creator-skills .tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.creator-info .creator-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.creator-info .creator-links a {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  transition: background .15s, border-color .15s;
+}
+.creator-info .creator-links a:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.creator-info .creator-links svg { width: 16px; height: 16px; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  padding: 48px 24px 32px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.footer__inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.footer__links { display: flex; gap: 20px; font-size: 13px; flex-wrap: wrap; }
+.footer__links a { color: var(--text-dim); transition: color .15s; }
+.footer__links a:hover { color: var(--text); }
+.footer__copy { font-size: 12px; color: var(--text-muted); }
+
+/* ============================================================
+   FADE-IN ANIMATION (IntersectionObserver-driven)
+   ============================================================ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .stats { grid-template-columns: 1fr; }
+  .features { grid-template-columns: 1fr; }
+  .roi-card { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+  .steps { grid-template-columns: 1fr; }
+  .privacy-grid { grid-template-columns: 1fr; }
+  .creator-card { grid-template-columns: 100px 1fr; gap: 20px; padding: 24px; }
+  .creator-photo { width: 100px; height: 100px; }
+  .creator-photo .material-symbols-outlined { font-size: 44px; }
+}
+
+@media (max-width: 600px) {
+  .section { padding: 56px 20px; }
+  .hero { padding: 56px 20px 64px; }
+  .hero__logo { width: 96px; height: 96px; margin-bottom: 24px; }
+  .nav__inner { padding: 0 16px; gap: 6px; }
+  .creator-card { grid-template-columns: 1fr; text-align: center; }
+  .creator-photo { margin: 0 auto; }
+  .creator-info .creator-skills, .creator-info .creator-links { justify-content: center; }
+  .footer__inner { flex-direction: column; text-align: center; }
+  .stat-card__value { font-size: 30px; }
+  .roi-result__value.--big { font-size: 26px; }
+}
+
+@media (max-width: 480px) {
+  .hero__cta .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="#top">
+      <div class="brand__mark">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="DriveTools">
+          <defs>
+            <linearGradient id="nav-green" gradientUnits="userSpaceOnUse" x1="14" y1="20" x2="50" y2="20">
+              <stop offset="0%" stop-color="#188038"/><stop offset="18%" stop-color="#34A853"/>
+              <stop offset="82%" stop-color="#34A853"/><stop offset="100%" stop-color="#188038"/>
+            </linearGradient>
+            <linearGradient id="nav-yellow" gradientUnits="userSpaceOnUse" x1="50" y1="20" x2="32" y2="51">
+              <stop offset="0%" stop-color="#E37400"/><stop offset="18%" stop-color="#FBBC04"/>
+              <stop offset="82%" stop-color="#FBBC04"/><stop offset="100%" stop-color="#E37400"/>
+            </linearGradient>
+            <linearGradient id="nav-blue" gradientUnits="userSpaceOnUse" x1="14" y1="20" x2="32" y2="51">
+              <stop offset="0%" stop-color="#1967D2"/><stop offset="18%" stop-color="#4285F4"/>
+              <stop offset="82%" stop-color="#4285F4"/><stop offset="100%" stop-color="#1967D2"/>
+            </linearGradient>
+          </defs>
+          <g fill="none" stroke-width="13" stroke-linecap="round">
+            <line x1="50" y1="20" x2="32" y2="51" stroke="url(#nav-yellow)"/>
+            <line x1="14" y1="20" x2="32" y2="51" stroke="url(#nav-blue)"/>
+            <line x1="14" y1="20" x2="50" y2="20" stroke="url(#nav-green)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand__name">DriveTools</div>
+    </a>
+
+    <div class="nav__spacer"></div>
+
+    <!-- Language toggle -->
+    <div class="dropdown" id="langDropdown">
+      <button class="icon-btn" onclick="App.toggleDropdown('langDropdown')" aria-label="Language">
+        <span class="material-symbols-outlined">language</span>
+      </button>
+      <div class="dropdown__menu">
+        <button class="dropdown__item" data-lang-set="pt"><span class="lang-code">PT</span> Português <span class="material-symbols-outlined check">check</span></button>
+        <button class="dropdown__item" data-lang-set="en"><span class="lang-code">EN</span> English <span class="material-symbols-outlined check">check</span></button>
+        <button class="dropdown__item" data-lang-set="es"><span class="lang-code">ES</span> Español <span class="material-symbols-outlined check">check</span></button>
+      </div>
+    </div>
+
+    <!-- Theme toggle -->
+    <div class="dropdown" id="themeDropdown">
+      <button class="icon-btn" onclick="App.toggleDropdown('themeDropdown')" aria-label="Theme">
+        <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+      </button>
+      <div class="dropdown__menu">
+        <button class="dropdown__item" data-theme-set="dark"><span class="material-symbols-outlined">dark_mode</span> <span data-i18n="theme.dark">Escuro</span> <span class="material-symbols-outlined check">check</span></button>
+        <button class="dropdown__item" data-theme-set="light"><span class="material-symbols-outlined">light_mode</span> <span data-i18n="theme.light">Claro</span> <span class="material-symbols-outlined check">check</span></button>
+        <button class="dropdown__item" data-theme-set="auto"><span class="material-symbols-outlined">desktop_windows</span> <span data-i18n="theme.auto">Automático</span> <span class="material-symbols-outlined check">check</span></button>
+      </div>
+    </div>
+
+    <a class="btn btn--filled" href="https://script.google.com/macros/s/AKfycbw2wFUP0cXX0-hZz0cMkPfapxyPcxBvfgUE1zJpiCo6Xda64k6vwdi2IaZaVO8z2sn2WQ/exec" target="_blank">
+      <span class="material-symbols-outlined">login</span> <span data-i18n="nav.signin">Entrar</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="top">
+  <div class="hero__inner">
+    <div class="hero__logo">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hero-green" gradientUnits="userSpaceOnUse" x1="14" y1="20" x2="50" y2="20">
+            <stop offset="0%" stop-color="#188038"/><stop offset="18%" stop-color="#34A853"/>
+            <stop offset="82%" stop-color="#34A853"/><stop offset="100%" stop-color="#188038"/>
+          </linearGradient>
+          <linearGradient id="hero-yellow" gradientUnits="userSpaceOnUse" x1="50" y1="20" x2="32" y2="51">
+            <stop offset="0%" stop-color="#E37400"/><stop offset="18%" stop-color="#FBBC04"/>
+            <stop offset="82%" stop-color="#FBBC04"/><stop offset="100%" stop-color="#E37400"/>
+          </linearGradient>
+          <linearGradient id="hero-blue" gradientUnits="userSpaceOnUse" x1="14" y1="20" x2="32" y2="51">
+            <stop offset="0%" stop-color="#1967D2"/><stop offset="18%" stop-color="#4285F4"/>
+            <stop offset="82%" stop-color="#4285F4"/><stop offset="100%" stop-color="#1967D2"/>
+          </linearGradient>
+        </defs>
+        <g fill="none" stroke-width="13" stroke-linecap="round">
+          <line x1="50" y1="20" x2="32" y2="51" stroke="url(#hero-yellow)"/>
+          <line x1="14" y1="20" x2="32" y2="51" stroke="url(#hero-blue)"/>
+          <line x1="14" y1="20" x2="50" y2="20" stroke="url(#hero-green)"/>
+        </g>
+      </svg>
+    </div>
+    <h1 class="hero__title">
+      <span data-i18n="hero.title.1">Limpe, organize e</span><br>
+      <span class="accent" data-i18n="hero.title.2">proteja seu Drive.</span>
+    </h1>
+    <p class="hero__subtitle" data-i18n="hero.subtitle">Quatro ferramentas em uma só. Encontre duplicatas, organize arquivos e audite quem tem acesso ao quê. Roda dentro da sua conta Google.</p>
+
+    <div class="hero__cta">
+      <a class="btn btn--primary btn--lg" href="https://script.google.com/macros/s/AKfycbw2wFUP0cXX0-hZz0cMkPfapxyPcxBvfgUE1zJpiCo6Xda64k6vwdi2IaZaVO8z2sn2WQ/exec" target="_blank">
+        <span class="material-symbols-outlined">login</span> <span data-i18n="hero.cta.primary">Entrar com Google</span>
+      </a>
+      <a class="btn btn--ghost btn--lg" href="https://github.com" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.73-4.04-1.61-4.04-1.61C4.42 18.07 3.63 17.7 3.63 17.7c-1.09-.74.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61C7.14 17.3 4.34 16.27 4.34 11.66c0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.62-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3"/></svg>
+        GitHub
+      </a>
+    </div>
+
+    <div class="hero__trust">
+      <span><span class="material-symbols-outlined">verified</span> <span data-i18n="hero.trust.1">100% gratuito</span></span>
+      <span><span class="material-symbols-outlined">code</span> <span data-i18n="hero.trust.2">Open source</span></span>
+      <span><span class="material-symbols-outlined">lock</span> <span data-i18n="hero.trust.3">Roda na sua conta Google</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PROBLEMA
+     ============================================================ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head fade-in">
+      <div class="section__eyebrow" data-i18n="problem.eyebrow">O problema</div>
+      <h2 class="section__title" data-i18n="problem.title">Seu Drive está mais cheio do que precisa</h2>
+      <p class="section__subtitle" data-i18n="problem.subtitle">Em contas pessoais com anos de uso, uma fatia silenciosa do armazenamento é desperdício puro: cópias, backups esquecidos e arquivos que ninguém mais abre.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card fade-in">
+        <div class="stat-card__icon"><span class="material-symbols-outlined">content_copy</span></div>
+        <div class="stat-card__value" data-i18n="problem.stat1.value">15 a 30%</div>
+        <div class="stat-card__label" data-i18n="problem.stat1.label">do espaço usado em contas pessoais costuma ser arquivo duplicado.</div>
+      </div>
+      <div class="stat-card fade-in">
+        <div class="stat-card__icon --y"><span class="material-symbols-outlined">schedule</span></div>
+        <div class="stat-card__value" data-i18n="problem.stat2.value">+60%</div>
+        <div class="stat-card__label" data-i18n="problem.stat2.label">dos arquivos pesados não são abertos há mais de 6 meses.</div>
+      </div>
+      <div class="stat-card fade-in">
+        <div class="stat-card__icon --b"><span class="material-symbols-outlined">lock_open</span></div>
+        <div class="stat-card__value" data-i18n="problem.stat3.value">1 em 5</div>
+        <div class="stat-card__label" data-i18n="problem.stat3.label">arquivos compartilhados ainda têm acesso para pessoas que você esqueceu.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="section" style="background: var(--bg-elev)">
+  <div class="section__inner">
+    <div class="section__head fade-in">
+      <div class="section__eyebrow" data-i18n="features.eyebrow">As ferramentas</div>
+      <h2 class="section__title" data-i18n="features.title">Quatro módulos, uma única conta</h2>
+      <p class="section__subtitle" data-i18n="features.subtitle">Sem sair do mesmo painel você vê o que pesa, limpa duplicatas, organiza a raiz do Drive e audita permissões.</p>
+    </div>
+
+    <div class="features">
+      <div class="feature fade-in">
+        <div class="feature__icon --blue"><span class="material-symbols-outlined">dashboard</span></div>
+        <h3 class="feature__title" data-i18n="features.f1.title">Dashboard</h3>
+        <p class="feature__text" data-i18n="features.f1.text">Veja a distribuição do seu armazenamento, os arquivos mais pesados, os antigos esquecidos e os que ninguém abre há meses.</p>
+      </div>
+      <div class="feature fade-in">
+        <div class="feature__icon --red"><span class="material-symbols-outlined">cleaning_services</span></div>
+        <h3 class="feature__title" data-i18n="features.f2.title">Drive Clean</h3>
+        <p class="feature__text" data-i18n="features.f2.text">Encontra duplicatas comparando hash MD5. Você decide o que mantém e o que vai pra lixeira em lote, com confirmação.</p>
+      </div>
+      <div class="feature fade-in">
+        <div class="feature__icon --yellow"><span class="material-symbols-outlined">folder_managed</span></div>
+        <h3 class="feature__title" data-i18n="features.f3.title">Drive Organizer</h3>
+        <p class="feature__text" data-i18n="features.f3.text">Move os arquivos soltos na raiz do Meu Drive pra pastas por tipo: Imagens, Documentos, PDFs, Vídeos, Áudios.</p>
+      </div>
+      <div class="feature fade-in">
+        <div class="feature__icon --green"><span class="material-symbols-outlined">policy</span></div>
+        <h3 class="feature__title" data-i18n="features.f4.title">Drive Exposed</h3>
+        <p class="feature__text" data-i18n="features.f4.text">Lista todo arquivo do seu Drive com compartilhamentos ativos, separando externos e públicos. Revogue em um clique.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROI CALCULATOR
+     ============================================================ -->
+<section class="section roi" id="roi">
+  <div class="section__inner">
+    <div class="section__head fade-in">
+      <div class="section__eyebrow" data-i18n="roi.eyebrow">Quanto você economiza</div>
+      <h2 class="section__title" data-i18n="roi.title">Calculadora de economia</h2>
+      <p class="section__subtitle" data-i18n="roi.subtitle">Mova os controles e veja quanto pode liberar do seu Drive — e, na média do mercado, quanto isso vale por ano em planos do Google One.</p>
+    </div>
+
+    <div class="roi-card fade-in">
+      <div class="roi-controls">
+        <div>
+          <div class="roi-control__label">
+            <span class="roi-control__label-text" data-i18n="roi.input1">Espaço atual no Drive</span>
+            <span class="roi-control__value" id="roiStorageLabel">250 GB</span>
+          </div>
+          <input type="range" class="slider" id="roiStorage" min="30" max="5000" step="10" value="250">
+        </div>
+        <div>
+          <div class="roi-control__label">
+            <span class="roi-control__label-text" data-i18n="roi.input2">% estimado de duplicatas</span>
+            <span class="roi-control__value" id="roiDupLabel">25%</span>
+          </div>
+          <input type="range" class="slider" id="roiDup" min="5" max="40" step="1" value="25">
+        </div>
+      </div>
+
+      <div class="roi-result">
+        <div class="roi-result__row">
+          <span class="roi-result__label" data-i18n="roi.r1">Espaço liberado</span>
+          <span class="roi-result__value --big" id="roiFreed">63 GB</span>
+        </div>
+        <div class="roi-result__row">
+          <span class="roi-result__label" data-i18n="roi.r2">Plano Google One sugerido</span>
+          <span class="roi-result__value" id="roiPlan">200 GB · Padrão · R$ 14,99/mês</span>
+        </div>
+        <div class="roi-result__row">
+          <span class="roi-result__label" data-i18n="roi.r3">Economia anual potencial</span>
+          <span class="roi-result__value" id="roiSavings" style="color: var(--gg-green)">R$ 420/ano</span>
+        </div>
+        <p class="roi-note" data-i18n="roi.note">* Estimativa baseada nos preços do Google One Brasil (2026). A economia real depende do plano que você consegue reduzir após a limpeza.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COMO FUNCIONA
+     ============================================================ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head fade-in">
+      <div class="section__eyebrow" data-i18n="how.eyebrow">Como começar</div>
+      <h2 class="section__title" data-i18n="how.title">Três passos. Sem cadastro.</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step fade-in">
+        <h3 class="step__title" data-i18n="how.s1.title">Abra o app</h3>
+        <p class="step__text" data-i18n="how.s1.text">Clique em "Entrar com Google" e faça login com a conta cujo Drive você quer analisar.</p>
+      </div>
+      <div class="step fade-in">
+        <h3 class="step__title" data-i18n="how.s2.title">Autorize o acesso</h3>
+        <p class="step__text" data-i18n="how.s2.text">O Google pede permissão pra acessar Drive e Sheets. O DriveTools roda dentro do seu Apps Script, não num servidor externo.</p>
+      </div>
+      <div class="step fade-in">
+        <h3 class="step__title" data-i18n="how.s3.title">Limpe e audite</h3>
+        <p class="step__text" data-i18n="how.s3.text">Use o dashboard pra ver o panorama, depois rode os módulos de limpeza, organização e auditoria conforme a necessidade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRIVACY / TRUST
+     ============================================================ -->
+<section class="section privacy">
+  <div class="section__inner">
+    <div class="section__head fade-in">
+      <div class="section__eyebrow" data-i18n="privacy.eyebrow">Privacidade</div>
+      <h2 class="section__title" data-i18n="privacy.title">Seus dados não saem da sua conta</h2>
+      <p class="section__subtitle" data-i18n="privacy.subtitle">O DriveTools é um Web App do Google Apps Script. O código roda dentro da sua própria conta Google, sob suas credenciais. Nenhum servidor externo recebe seus arquivos.</p>
+    </div>
+
+    <div class="privacy-grid">
+      <div class="privacy-item fade-in">
+        <div class="privacy-item__icon"><span class="material-symbols-outlined">shield</span></div>
+        <div>
+          <div class="privacy-item__title" data-i18n="privacy.p1.title">Tudo fica no Google</div>
+          <div class="privacy-item__text" data-i18n="privacy.p1.text">As chamadas à API do Drive são feitas direto pela sua conta. Nenhum byte do seu arquivo passa por um servidor de terceiros.</div>
+        </div>
+      </div>
+      <div class="privacy-item fade-in">
+        <div class="privacy-item__icon"><span class="material-symbols-outlined">code</span></div>
+        <div>
+          <div class="privacy-item__title" data-i18n="privacy.p2.title">Código aberto</div>
+          <div class="privacy-item__text" data-i18n="privacy.p2.text">Todo o backend (Code.gs) e frontend (Index.html) estão no GitHub. Você pode auditar, modificar e implantar sua própria cópia.</div>
+        </div>
+      </div>
+      <div class="privacy-item fade-in">
+        <div class="privacy-item__icon"><span class="material-symbols-outlined">power_settings_new</span></div>
+        <div>
+          <div class="privacy-item__title" data-i18n="privacy.p3.title">Você controla o acesso</div>
+          <div class="privacy-item__text" data-i18n="privacy.p3.text">A qualquer momento você revoga a permissão em myaccount.google.com → Segurança → Acessos de terceiros.</div>
+        </div>
+      </div>
+      <div class="privacy-item fade-in">
+        <div class="privacy-item__icon"><span class="material-symbols-outlined">delete</span></div>
+        <div>
+          <div class="privacy-item__title" data-i18n="privacy.p4.title">Lixeira é reversível</div>
+          <div class="privacy-item__text" data-i18n="privacy.p4.text">Arquivos enviados pra lixeira pelo DriveTools ficam recuperáveis por 30 dias antes de exclusão permanente.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA FINAL
+     ============================================================ -->
+<section class="section cta-final">
+  <div class="section__inner">
+    <h2 class="cta-final__title fade-in" data-i18n="cta.title">Comece a recuperar espaço agora</h2>
+    <p class="cta-final__text fade-in" data-i18n="cta.text">Leva menos de um minuto pra entrar e ver o panorama do seu Drive.</p>
+    <div class="fade-in">
+      <a class="btn btn--primary btn--lg" href="https://script.google.com/macros/s/AKfycbw2wFUP0cXX0-hZz0cMkPfapxyPcxBvfgUE1zJpiCo6Xda64k6vwdi2IaZaVO8z2sn2WQ/exec" target="_blank">
+        <span class="material-symbols-outlined">login</span> <span data-i18n="cta.button">Entrar com Google</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CRIADOR
+     ============================================================ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head fade-in">
+      <div class="section__eyebrow" data-i18n="creator.eyebrow">Quem fez</div>
+      <h2 class="section__title" data-i18n="creator.title">Construído por quem usa</h2>
+    </div>
+
+    <div class="creator-card fade-in">
+      <div class="creator-photo" id="creatorPhoto">
+        <span class="material-symbols-outlined">person</span>
+      </div>
+      <div class="creator-info">
+        <h3>Rodrigo Prado</h3>
+        <div class="creator-role" data-i18n="creator.role">Coordenador de Customer Success — Avant Services, Maringá, PR.</div>
+        <p class="creator-bio" data-i18n="creator.bio">Construí o DriveTools pra resolver um problema real do dia a dia: o acúmulo silencioso de arquivos que desperdiçam espaço, escondem informações sensíveis e tornam o Drive inutilizável. Acredito que boas ferramentas devem ser invisíveis, rápidas e honestas.</p>
+        <div class="creator-skills">
+          <span class="tag">Google Apps Script</span>
+          <span class="tag">ClickUp</span>
+          <span class="tag">Salesforce</span>
+          <span class="tag">Power Automate</span>
+          <span class="tag">Microsoft 365</span>
+        </div>
+        <div class="creator-links">
+          <a href="https://www.linkedin.com/in/rodrigoprado128/" target="_blank">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 1 1 8.3 6.5a1.78 1.78 0 0 1-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0 0 13 14.19a.66.66 0 0 0 0 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 0 1 2.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+            LinkedIn
+          </a>
+          <a href="https://github.com" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.73-4.04-1.61-4.04-1.61C4.42 18.07 3.63 17.7 3.63 17.7c-1.09-.74.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61C7.14 17.3 4.34 16.27 4.34 11.66c0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.62-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <a class="brand" href="#top">
+      <div class="brand__mark">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="f-green" gradientUnits="userSpaceOnUse" x1="14" y1="20" x2="50" y2="20">
+              <stop offset="0%" stop-color="#188038"/><stop offset="18%" stop-color="#34A853"/>
+              <stop offset="82%" stop-color="#34A853"/><stop offset="100%" stop-color="#188038"/>
+            </linearGradient>
+            <linearGradient id="f-yellow" gradientUnits="userSpaceOnUse" x1="50" y1="20" x2="32" y2="51">
+              <stop offset="0%" stop-color="#E37400"/><stop offset="18%" stop-color="#FBBC04"/>
+              <stop offset="82%" stop-color="#FBBC04"/><stop offset="100%" stop-color="#E37400"/>
+            </linearGradient>
+            <linearGradient id="f-blue" gradientUnits="userSpaceOnUse" x1="14" y1="20" x2="32" y2="51">
+              <stop offset="0%" stop-color="#1967D2"/><stop offset="18%" stop-color="#4285F4"/>
+              <stop offset="82%" stop-color="#4285F4"/><stop offset="100%" stop-color="#1967D2"/>
+            </linearGradient>
+          </defs>
+          <g fill="none" stroke-width="13" stroke-linecap="round">
+            <line x1="50" y1="20" x2="32" y2="51" stroke="url(#f-yellow)"/>
+            <line x1="14" y1="20" x2="32" y2="51" stroke="url(#f-blue)"/>
+            <line x1="14" y1="20" x2="50" y2="20" stroke="url(#f-green)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand__name">DriveTools</div>
+    </a>
+
+    <nav class="footer__links">
+      <a href="https://github.com" target="_blank">GitHub</a>
+      <a href="https://script.google.com/macros/s/AKfycbw2wFUP0cXX0-hZz0cMkPfapxyPcxBvfgUE1zJpiCo6Xda64k6vwdi2IaZaVO8z2sn2WQ/exec" target="_blank" data-i18n="footer.app">Abrir app</a>
+      <a href="https://www.linkedin.com/in/rodrigoprado128/" target="_blank">LinkedIn</a>
+    </nav>
+
+    <div class="footer__copy">
+      <span data-i18n="footer.copy">© 2026 DriveTools · MIT License · Open source</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   APP STATE
+   ============================================================ */
+const App = {
+  state: {
+    lang: localStorage.getItem('dt_lang') || 'pt',
+    theme: localStorage.getItem('dt_theme') || 'dark'
+  },
+
+  init() {
+    this.applyTheme(this.state.theme);
+    this.applyLang(this.state.lang);
+    this.bindGlobal();
+    this.observeFadeIns();
+    ROI.init();
+  },
+
+  bindGlobal() {
+    document.querySelectorAll('[data-lang-set]').forEach(b => {
+      b.onclick = () => { this.applyLang(b.dataset.langSet); this.closeDropdowns(); };
+    });
+    document.querySelectorAll('[data-theme-set]').forEach(b => {
+      b.onclick = () => { this.applyTheme(b.dataset.themeSet); this.closeDropdowns(); };
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.dropdown')) this.closeDropdowns();
+    });
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (this.state.theme === 'auto') this.applyTheme('auto');
+      });
+    }
+  },
+
+  toggleDropdown(id) {
+    const el = document.getElementById(id);
+    const open = el.classList.contains('open');
+    this.closeDropdowns();
+    if (!open) el.classList.add('open');
+  },
+
+  closeDropdowns() {
+    document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+  },
+
+  applyTheme(theme) {
+    this.state.theme = theme;
+    localStorage.setItem('dt_theme', theme);
+    let resolved = theme;
+    if (theme === 'auto') {
+      resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.dataset.theme = resolved;
+    const ti = document.getElementById('themeIcon');
+    if (ti) ti.textContent = theme === 'light' ? 'light_mode' : theme === 'auto' ? 'desktop_windows' : 'dark_mode';
+    document.querySelectorAll('[data-theme-set]').forEach(b => {
+      b.classList.toggle('active', b.dataset.themeSet === theme);
+    });
+  },
+
+  applyLang(lang) {
+    this.state.lang = lang;
+    localStorage.setItem('dt_lang', lang);
+    document.documentElement.lang = ({pt:'pt-BR', en:'en', es:'es'})[lang] || 'pt-BR';
+    document.documentElement.dataset.lang = lang;
+    const dict = I18N[lang] || I18N.pt;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.dataset.i18n;
+      if (dict[k]) el.textContent = dict[k];
+    });
+    document.querySelectorAll('[data-lang-set]').forEach(b => {
+      b.classList.toggle('active', b.dataset.langSet === lang);
+    });
+    ROI.refresh();
+  },
+
+  observeFadeIns() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  }
+};
+
+/* ============================================================
+   I18N
+   ============================================================ */
+const I18N = {
+  pt: {
+    'nav.signin':'Entrar',
+    'theme.dark':'Escuro','theme.light':'Claro','theme.auto':'Automático',
+    'hero.title.1':'Limpe, organize e','hero.title.2':'proteja seu Drive.',
+    'hero.subtitle':'Quatro ferramentas em uma só. Encontre duplicatas, organize arquivos e audite quem tem acesso ao quê. Roda dentro da sua conta Google.',
+    'hero.cta.primary':'Entrar com Google',
+    'hero.trust.1':'100% gratuito','hero.trust.2':'Open source','hero.trust.3':'Roda na sua conta Google',
+
+    'problem.eyebrow':'O problema',
+    'problem.title':'Seu Drive está mais cheio do que precisa',
+    'problem.subtitle':'Em contas pessoais com anos de uso, uma fatia silenciosa do armazenamento é desperdício puro: cópias, backups esquecidos e arquivos que ninguém mais abre.',
+    'problem.stat1.value':'15 a 30%','problem.stat1.label':'do espaço usado em contas pessoais costuma ser arquivo duplicado.',
+    'problem.stat2.value':'+60%','problem.stat2.label':'dos arquivos pesados não são abertos há mais de 6 meses.',
+    'problem.stat3.value':'1 em 5','problem.stat3.label':'arquivos compartilhados ainda têm acesso para pessoas que você esqueceu.',
+
+    'features.eyebrow':'As ferramentas',
+    'features.title':'Quatro módulos, uma única conta',
+    'features.subtitle':'Sem sair do mesmo painel você vê o que pesa, limpa duplicatas, organiza a raiz do Drive e audita permissões.',
+    'features.f1.title':'Dashboard','features.f1.text':'Veja a distribuição do seu armazenamento, os arquivos mais pesados, os antigos esquecidos e os que ninguém abre há meses.',
+    'features.f2.title':'Drive Clean','features.f2.text':'Encontra duplicatas comparando hash MD5. Você decide o que mantém e o que vai pra lixeira em lote, com confirmação.',
+    'features.f3.title':'Drive Organizer','features.f3.text':'Move os arquivos soltos na raiz do Meu Drive pra pastas por tipo: Imagens, Documentos, PDFs, Vídeos, Áudios.',
+    'features.f4.title':'Drive Exposed','features.f4.text':'Lista todo arquivo do seu Drive com compartilhamentos ativos, separando externos e públicos. Revogue em um clique.',
+
+    'roi.eyebrow':'Quanto você economiza',
+    'roi.title':'Calculadora de economia',
+    'roi.subtitle':'Mova os controles e veja quanto pode liberar do seu Drive — e, na média do mercado, quanto isso vale por ano em planos do Google One.',
+    'roi.input1':'Espaço atual no Drive','roi.input2':'% estimado de duplicatas',
+    'roi.r1':'Espaço liberado','roi.r2':'Plano Google One sugerido','roi.r3':'Economia anual potencial',
+    'roi.note':'* Estimativa baseada nos preços do Google One Brasil (2026). A economia real depende do plano que você consegue reduzir após a limpeza.',
+
+    'how.eyebrow':'Como começar','how.title':'Três passos. Sem cadastro.',
+    'how.s1.title':'Abra o app','how.s1.text':'Clique em "Entrar com Google" e faça login com a conta cujo Drive você quer analisar.',
+    'how.s2.title':'Autorize o acesso','how.s2.text':'O Google pede permissão pra acessar Drive e Sheets. O DriveTools roda dentro do seu Apps Script, não num servidor externo.',
+    'how.s3.title':'Limpe e audite','how.s3.text':'Use o dashboard pra ver o panorama, depois rode os módulos de limpeza, organização e auditoria conforme a necessidade.',
+
+    'privacy.eyebrow':'Privacidade',
+    'privacy.title':'Seus dados não saem da sua conta',
+    'privacy.subtitle':'O DriveTools é um Web App do Google Apps Script. O código roda dentro da sua própria conta Google, sob suas credenciais. Nenhum servidor externo recebe seus arquivos.',
+    'privacy.p1.title':'Tudo fica no Google','privacy.p1.text':'As chamadas à API do Drive são feitas direto pela sua conta. Nenhum byte do seu arquivo passa por um servidor de terceiros.',
+    'privacy.p2.title':'Código aberto','privacy.p2.text':'Todo o backend (Code.gs) e frontend (Index.html) estão no GitHub. Você pode auditar, modificar e implantar sua própria cópia.',
+    'privacy.p3.title':'Você controla o acesso','privacy.p3.text':'A qualquer momento você revoga a permissão em myaccount.google.com → Segurança → Acessos de terceiros.',
+    'privacy.p4.title':'Lixeira é reversível','privacy.p4.text':'Arquivos enviados pra lixeira pelo DriveTools ficam recuperáveis por 30 dias antes de exclusão permanente.',
+
+    'cta.title':'Comece a recuperar espaço agora',
+    'cta.text':'Leva menos de um minuto pra entrar e ver o panorama do seu Drive.',
+    'cta.button':'Entrar com Google',
+
+    'creator.eyebrow':'Quem fez','creator.title':'Construído por quem usa',
+    'creator.role':'Coordenador de Customer Success — Avant Services, Maringá, PR.',
+    'creator.bio':'Construí o DriveTools pra resolver um problema real do dia a dia: o acúmulo silencioso de arquivos que desperdiçam espaço, escondem informações sensíveis e tornam o Drive inutilizável. Acredito que boas ferramentas devem ser invisíveis, rápidas e honestas.',
+
+    'footer.app':'Abrir app','footer.copy':'© 2026 DriveTools · MIT License · Open source'
+  },
+
+  en: {
+    'nav.signin':'Sign in',
+    'theme.dark':'Dark','theme.light':'Light','theme.auto':'Auto',
+    'hero.title.1':'Clean, organize and','hero.title.2':'protect your Drive.',
+    'hero.subtitle':'Four tools in one. Find duplicates, organize files and audit who has access to what. Runs inside your own Google account.',
+    'hero.cta.primary':'Sign in with Google',
+    'hero.trust.1':'100% free','hero.trust.2':'Open source','hero.trust.3':'Runs in your Google account',
+
+    'problem.eyebrow':'The problem',
+    'problem.title':'Your Drive is fuller than it needs to be',
+    'problem.subtitle':'On personal accounts with years of use, a silent slice of your storage is pure waste: copies, forgotten backups and files nobody opens anymore.',
+    'problem.stat1.value':'15 to 30%','problem.stat1.label':'of space used in personal accounts is typically duplicate files.',
+    'problem.stat2.value':'+60%','problem.stat2.label':'of heavy files have not been opened in over 6 months.',
+    'problem.stat3.value':'1 in 5','problem.stat3.label':'shared files still grant access to people you forgot about.',
+
+    'features.eyebrow':'The tools',
+    'features.title':'Four modules, one account',
+    'features.subtitle':'Without leaving the same dashboard you see what is heavy, remove duplicates, organize your Drive root and audit permissions.',
+    'features.f1.title':'Dashboard','features.f1.text':'See your storage distribution, your heaviest files, the old forgotten ones and those nobody has opened in months.',
+    'features.f2.title':'Drive Clean','features.f2.text':'Finds duplicates by comparing MD5 hashes. You decide what to keep and what goes to trash in batch, with confirmation.',
+    'features.f3.title':'Drive Organizer','features.f3.text':'Moves loose files from My Drive root into folders by type: Images, Documents, PDFs, Videos, Audio.',
+    'features.f4.title':'Drive Exposed','features.f4.text':'Lists every file in your Drive with active sharing, separating external and public links. Revoke in one click.',
+
+    'roi.eyebrow':'What you save',
+    'roi.title':'Savings calculator',
+    'roi.subtitle':'Move the controls and see how much you could free up — and, by market average, how much that is worth per year in Google One plans.',
+    'roi.input1':'Current Drive usage','roi.input2':'Estimated % of duplicates',
+    'roi.r1':'Space freed','roi.r2':'Suggested Google One plan','roi.r3':'Potential annual savings',
+    'roi.note':'* Estimate based on Google One Brazil pricing (2026). Actual savings depend on the plan you can downgrade to after cleanup.',
+
+    'how.eyebrow':'How to start','how.title':'Three steps. No signup.',
+    'how.s1.title':'Open the app','how.s1.text':'Click "Sign in with Google" and log in with the account whose Drive you want to analyze.',
+    'how.s2.title':'Grant access','how.s2.text':'Google asks for permission to access Drive and Sheets. DriveTools runs inside your Apps Script, not on an external server.',
+    'how.s3.title':'Clean and audit','how.s3.text':'Use the dashboard to see the big picture, then run the cleanup, organization and audit modules as needed.',
+
+    'privacy.eyebrow':'Privacy',
+    'privacy.title':'Your data never leaves your account',
+    'privacy.subtitle':'DriveTools is a Google Apps Script Web App. The code runs inside your own Google account, under your credentials. No external server receives your files.',
+    'privacy.p1.title':'Stays in Google','privacy.p1.text':'Drive API calls are made directly under your account. No byte of your files passes through a third-party server.',
+    'privacy.p2.title':'Open source','privacy.p2.text':'The full backend (Code.gs) and frontend (Index.html) are on GitHub. You can audit, modify and deploy your own copy.',
+    'privacy.p3.title':'You control access','privacy.p3.text':'At any time you can revoke permission at myaccount.google.com → Security → Third-party access.',
+    'privacy.p4.title':'Trash is reversible','privacy.p4.text':'Files sent to trash by DriveTools remain recoverable for 30 days before permanent deletion.',
+
+    'cta.title':'Start reclaiming space now',
+    'cta.text':'Takes less than a minute to sign in and see the picture of your Drive.',
+    'cta.button':'Sign in with Google',
+
+    'creator.eyebrow':'Who built it','creator.title':'Built by someone who uses it',
+    'creator.role':'Customer Success Lead — Avant Services, Maringá, PR, Brazil.',
+    'creator.bio':'I built DriveTools to solve a real daily problem: the silent pile-up of files that waste space, hide sensitive information and make Drive unusable. I believe good tools should be invisible, fast and honest.',
+
+    'footer.app':'Open app','footer.copy':'© 2026 DriveTools · MIT License · Open source'
+  },
+
+  es: {
+    'nav.signin':'Entrar',
+    'theme.dark':'Oscuro','theme.light':'Claro','theme.auto':'Automático',
+    'hero.title.1':'Limpia, organiza y','hero.title.2':'protege tu Drive.',
+    'hero.subtitle':'Cuatro herramientas en una. Encuentra duplicados, organiza archivos y audita quién tiene acceso a qué. Funciona dentro de tu cuenta de Google.',
+    'hero.cta.primary':'Entrar con Google',
+    'hero.trust.1':'100% gratis','hero.trust.2':'Código abierto','hero.trust.3':'Funciona en tu cuenta de Google',
+
+    'problem.eyebrow':'El problema',
+    'problem.title':'Tu Drive está más lleno de lo necesario',
+    'problem.subtitle':'En cuentas personales con años de uso, una porción silenciosa del almacenamiento es desperdicio puro: copias, respaldos olvidados y archivos que nadie abre.',
+    'problem.stat1.value':'15 a 30%','problem.stat1.label':'del espacio usado en cuentas personales suele ser archivo duplicado.',
+    'problem.stat2.value':'+60%','problem.stat2.label':'de los archivos pesados no se han abierto en más de 6 meses.',
+    'problem.stat3.value':'1 de 5','problem.stat3.label':'archivos compartidos siguen dando acceso a personas que olvidaste.',
+
+    'features.eyebrow':'Las herramientas',
+    'features.title':'Cuatro módulos, una cuenta',
+    'features.subtitle':'Sin salir del mismo panel ves qué pesa, eliminas duplicados, organizas la raíz del Drive y auditas permisos.',
+    'features.f1.title':'Dashboard','features.f1.text':'Ve la distribución de tu almacenamiento, los archivos más pesados, los antiguos olvidados y los que nadie abre hace meses.',
+    'features.f2.title':'Drive Clean','features.f2.text':'Encuentra duplicados comparando hash MD5. Tú decides qué mantener y qué va a la papelera en lote, con confirmación.',
+    'features.f3.title':'Drive Organizer','features.f3.text':'Mueve los archivos sueltos en la raíz de Mi Unidad a carpetas por tipo: Imágenes, Documentos, PDFs, Vídeos, Audios.',
+    'features.f4.title':'Drive Exposed','features.f4.text':'Lista cada archivo de tu Drive con uso compartido activo, separando externos y públicos. Revoca en un clic.',
+
+    'roi.eyebrow':'Cuánto ahorras',
+    'roi.title':'Calculadora de ahorro',
+    'roi.subtitle':'Mueve los controles y ve cuánto puedes liberar de tu Drive — y, en promedio del mercado, cuánto vale eso al año en planes de Google One.',
+    'roi.input1':'Uso actual del Drive','roi.input2':'% estimado de duplicados',
+    'roi.r1':'Espacio liberado','roi.r2':'Plan Google One sugerido','roi.r3':'Ahorro anual potencial',
+    'roi.note':'* Estimación basada en los precios de Google One Brasil (2026). El ahorro real depende del plan al que puedas bajar tras la limpieza.',
+
+    'how.eyebrow':'Cómo empezar','how.title':'Tres pasos. Sin registro.',
+    'how.s1.title':'Abre la app','how.s1.text':'Haz clic en "Entrar con Google" e inicia sesión con la cuenta cuyo Drive quieres analizar.',
+    'how.s2.title':'Autoriza el acceso','how.s2.text':'Google pide permiso para acceder a Drive y Sheets. DriveTools funciona dentro de tu Apps Script, no en un servidor externo.',
+    'how.s3.title':'Limpia y audita','how.s3.text':'Usa el dashboard para ver el panorama, luego ejecuta los módulos de limpieza, organización y auditoría según la necesidad.',
+
+    'privacy.eyebrow':'Privacidad',
+    'privacy.title':'Tus datos no salen de tu cuenta',
+    'privacy.subtitle':'DriveTools es una Web App de Google Apps Script. El código se ejecuta dentro de tu propia cuenta de Google, con tus credenciales. Ningún servidor externo recibe tus archivos.',
+    'privacy.p1.title':'Todo queda en Google','privacy.p1.text':'Las llamadas a la API de Drive se hacen directamente bajo tu cuenta. Ningún byte de tus archivos pasa por un servidor de terceros.',
+    'privacy.p2.title':'Código abierto','privacy.p2.text':'Todo el backend (Code.gs) y el frontend (Index.html) están en GitHub. Puedes auditar, modificar e implementar tu propia copia.',
+    'privacy.p3.title':'Tú controlas el acceso','privacy.p3.text':'En cualquier momento revocas el permiso en myaccount.google.com → Seguridad → Acceso de terceros.',
+    'privacy.p4.title':'La papelera es reversible','privacy.p4.text':'Los archivos enviados a la papelera por DriveTools se pueden recuperar durante 30 días antes de la eliminación permanente.',
+
+    'cta.title':'Empieza a recuperar espacio ahora',
+    'cta.text':'Lleva menos de un minuto entrar y ver el panorama de tu Drive.',
+    'cta.button':'Entrar con Google',
+
+    'creator.eyebrow':'Quién lo hizo','creator.title':'Construido por quien lo usa',
+    'creator.role':'Coordinador de Customer Success — Avant Services, Maringá, PR, Brasil.',
+    'creator.bio':'Construí DriveTools para resolver un problema real del día a día: la acumulación silenciosa de archivos que desperdician espacio, esconden datos sensibles y vuelven inutilizable el Drive. Creo que las buenas herramientas deben ser invisibles, rápidas y honestas.',
+
+    'footer.app':'Abrir app','footer.copy':'© 2026 DriveTools · Licencia MIT · Código abierto'
+  }
+};
+
+/* ============================================================
+   ROI CALCULATOR
+   ============================================================ */
+const ROI = {
+  // Google One BR 2026 — preços mensais
+  PLANS: [
+    { gb: 30,    name: '30 GB · Lite',           price: 4.50 },
+    { gb: 100,   name: '100 GB · Básico',        price: 9.99 },
+    { gb: 200,   name: '200 GB · Padrão',        price: 14.99 },
+    { gb: 2000,  name: '2 TB · Premium',         price: 49.99 },
+    { gb: 5000,  name: '5 TB · AI Pro',          price: 96.99 }
+  ],
+  PLAN_LABEL_KEYS: {
+    pt: { Lite:'Lite', 'Básico':'Básico', 'Padrão':'Padrão', Premium:'Premium', 'AI Pro':'AI Pro' },
+    en: { Lite:'Lite', 'Básico':'Basic', 'Padrão':'Standard', Premium:'Premium', 'AI Pro':'AI Pro' },
+    es: { Lite:'Lite', 'Básico':'Básico', 'Padrão':'Estándar', Premium:'Premium', 'AI Pro':'AI Pro' }
+  },
+
+  init() {
+    document.getElementById('roiStorage').addEventListener('input', () => this.refresh());
+    document.getElementById('roiDup').addEventListener('input', () => this.refresh());
+    this.refresh();
+  },
+
+  /** Acha o plano em uso (o menor plano que cobre o uso atual). */
+  planForUsage(usageGb) {
+    for (const p of this.PLANS) {
+      if (p.gb >= usageGb) return p;
+    }
+    return this.PLANS[this.PLANS.length - 1];
+  },
+
+  /** Plano sugerido após a limpeza (menor plano que cobre o novo uso). */
+  planAfterCleanup(newUsage) {
+    return this.planForUsage(newUsage);
+  },
+
+  formatGb(gb) {
+    if (gb >= 1000) return (gb / 1000).toFixed(gb % 1000 === 0 ? 0 : 1) + ' TB';
+    return Math.round(gb) + ' GB';
+  },
+
+  formatMoney(v) {
+    const lang = App.state.lang;
+    if (lang === 'en') return 'US$ ' + (v / 5).toFixed(2).replace('.', '.');
+    return 'R$ ' + v.toFixed(2).replace('.', ',');
+  },
+
+  refresh() {
+    const storage = parseInt(document.getElementById('roiStorage').value, 10);
+    const dup = parseInt(document.getElementById('roiDup').value, 10);
+    const freed = Math.round(storage * dup / 100);
+    const newUsage = storage - freed;
+
+    const currentPlan = this.planForUsage(storage);
+    const futurePlan = this.planForUsage(newUsage);
+    const monthlySaved = Math.max(0, currentPlan.price - futurePlan.price);
+    const yearlySaved = monthlySaved * 12;
+
+    document.getElementById('roiStorageLabel').textContent = this.formatGb(storage);
+    document.getElementById('roiDupLabel').textContent = dup + '%';
+    document.getElementById('roiFreed').textContent = this.formatGb(freed);
+
+    // Translate plan label for current language
+    const lang = App.state.lang;
+    let planLabel = futurePlan.name;
+    const dictPlans = this.PLAN_LABEL_KEYS[lang] || this.PLAN_LABEL_KEYS.pt;
+    Object.keys(dictPlans).forEach(k => {
+      planLabel = planLabel.replace(k, dictPlans[k]);
+    });
+    document.getElementById('roiPlan').textContent = planLabel + ' · ' + this.formatMoney(futurePlan.price) + (lang === 'en' ? '/mo' : '/mês');
+
+    const savingsEl = document.getElementById('roiSavings');
+    if (yearlySaved > 0) {
+      savingsEl.textContent = this.formatMoney(yearlySaved) + (lang === 'en' ? '/year' : lang === 'es' ? '/año' : '/ano');
+      savingsEl.style.color = 'var(--gg-green)';
+    } else {
+      savingsEl.textContent = lang === 'en' ? 'Already on smallest plan' : lang === 'es' ? 'Ya en el plan más pequeño' : 'Já no menor plano';
+      savingsEl.style.color = 'var(--text-muted)';
+    }
+  }
+};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => App.init());
+if (document.readyState !== 'loading') App.init();
+
+/* PHOTO PLACEHOLDER — substitua pela URL hospedada no GitHub Pages */
+const CREATOR_PHOTO_URL = '';
+window.addEventListener('load', () => {
+  if (CREATOR_PHOTO_URL) {
+    const ph = document.getElementById('creatorPhoto');
+    if (ph) {
+      ph.style.backgroundImage = 'url(' + CREATOR_PHOTO_URL + ')';
+      ph.innerHTML = '';
+    }
+  }
+});
+</script>
+
+</body>
+</html>
